@@ -1,6 +1,7 @@
 import { Navigate, Outlet } from "react-router-dom"
 
-const ProtectedRoute = ({ isAllowed, redirectTo = "/", children }: any) => {
+const ProtectedRoute = ({ redirectTo = "/", children }: any) => {
+    const isAllowed = localStorage.getItem('token');
     if (!isAllowed) {
         return <Navigate to={redirectTo} />;
     }

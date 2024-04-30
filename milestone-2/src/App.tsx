@@ -9,14 +9,13 @@ import Dashboard from './pages/Dashboard';
 import NotFound from './pages/NotFound';
 
 function App() {
-  const isAllowed = localStorage.getItem('token');
 
   return (
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
-      <Route element={<ProtectedRoute isAllowed={!!isAllowed as Boolean} />}>
+      <Route element={<ProtectedRoute />}>
         <Route path="/dashboard" element={<Dashboard />} />
       </Route>
       <Route path="*" element={<NotFound />} />
