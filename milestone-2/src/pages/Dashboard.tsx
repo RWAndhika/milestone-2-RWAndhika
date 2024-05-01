@@ -1,6 +1,10 @@
 import { useState } from "react";
 import DisplayPokemon from "../components/DisplayPokemon";
-interface Pokemon {
+import { useNavigate } from "react-router-dom";
+import LogOutComponent from "../components/LogOutComponent";
+
+export type Pokemon = {
+    id: number
     name: string,
     species: string,
     img: string,
@@ -12,9 +16,12 @@ interface Pokemon {
 
 const Dashboard = () => {
 
+    const [loading, setLoading] = useState<Boolean>(false);
     const [pokemonName, setPokemonName] = useState<string>("");
     const [pokemonChosen, setPokemonChosen] = useState<Boolean>(false);
+    const [favorite, setFavorite] = useState<Pokemon[]>([]);
     const [pokemon, setPokemon] = useState<Pokemon>({
+        id: 0,
         name: "",
         species: "",
         img: "",
@@ -24,43 +31,48 @@ const Dashboard = () => {
         type: ""
     });
 
+    const navigate = useNavigate();
+
+    const handleAddPokemon = (newPokemon: Pokemon) => {
+        setFavorite(prev => ({ ...prev, ...newPokemon }))
+    };
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setPokemonName(e.target.value.toLowerCase());
     }
 
     const searchPokemon = async () => {
-        const response = await fetch('https://pokeapi.co/api/v2/pokemon/' + pokemonName, {
-            method: 'GET',
-            headers: {
-                "Content-Type": "application/json",
-            },
-        })
-
         try {
+            setLoading(true);
+            const response = await fetch('https://pokeapi.co/api/v2/pokemon/' + pokemonName)
             if (!response.ok) {
                 setPokemonChosen(false);
-                alert(`${pokemonName} not found`)
+                throw new Error("Searching pokemon failed!");
             } else {
                 const data = await response.json();
                 setPokemon({
+                    id: data.id,
                     name: pokemonName,
                     species: data.species.name,
-                    img: data.sprites.front_default,
+                    img: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${data.id}.png`,
                     hp: data.stats[0].base_stat,
                     attack: data.stats[1].base_stat,
                     defense: data.stats[2].base_stat,
                     type: data.types[0].type.name
                 });
+                setLoading(false);
                 setPokemonChosen(true);
             }
 
         } catch (error) {
-            console.log('Error: ', error);
+            alert(error);
+            setLoading(false);
         }
     };
 
     return (
-        <section className="bg-yellow-50 mx-auto md:h-screen">
+        <section className="bg-yellow-50 mx-auto h-screen">
+            <LogOutComponent />
             <div className="flex items-center justify-center pt-4">
                 <img className="w-max h-12" src="https://raw.githubusercontent.com/PokeAPI/media/master/logo/pokeapi_256.png" alt="logo" />
             </div>
@@ -69,7 +81,7 @@ const Dashboard = () => {
                 <div className="relative">
                     <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
                         <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
+                            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
                         </svg>
                     </div>
                     <input type="search" id="default-search" placeholder="Search Pokemon..." onChange={handleChange}
@@ -81,10 +93,16 @@ const Dashboard = () => {
                 </div>
             </div>
             <div className="flex flex-column justify-center pt-4">
-                {!pokemonChosen ? (
-                    <h1>Please choose a pokemon</h1>
+                {loading ? (
+                    <div className='animate-spin w-16 mt-10'>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M304 48a48 48 0 1 0 -96 0 48 48 0 1 0 96 0zm0 416a48 48 0 1 0 -96 0 48 48 0 1 0 96 0zM48 304a48 48 0 1 0 0-96 48 48 0 1 0 0 96zm464-48a48 48 0 1 0 -96 0 48 48 0 1 0 96 0zM142.9 437A48 48 0 1 0 75 369.1 48 48 0 1 0 142.9 437zm0-294.2A48 48 0 1 0 75 75a48 48 0 1 0 67.9 67.9zM369.1 437A48 48 0 1 0 437 369.1 48 48 0 1 0 369.1 437z" /></svg>
+                    </div>
                 ) : (
-                    <DisplayPokemon pokemon={pokemon} />
+                    !pokemonChosen ? (
+                        <h1>Please choose a pokemon</h1>
+                    ) : (
+                        <DisplayPokemon pokemon={pokemon} onAddPokemon={handleAddPokemon} />
+                    )
                 )}
             </div>
         </section>
