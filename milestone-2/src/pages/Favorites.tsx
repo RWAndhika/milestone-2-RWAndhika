@@ -1,0 +1,47 @@
+import { Pokemon } from "./Dashboard";
+import { useEffect, useState } from "react";
+import DisplayPokemon from "../components/DisplayPokemon";
+
+const Favorites = () => {
+    
+    const [loading, setLoading] = useState<Boolean>(false);
+    const [pokemonList, setPokemonList] = useState<Pokemon[]>([]);
+
+    const items = JSON.parse(localStorage.getItem('favorites') || "");
+    
+    const handleAddPokemon = (newPokemon: Pokemon) => {
+        setPokemonList([...pokemonList, newPokemon]);
+    };
+    
+    useEffect(() => {
+        setLoading(true);
+        setPokemonList(items);
+        setLoading(false);
+        console.log(pokemonList);
+    }, []);
+
+    return (
+        <section className="bg-yellow-50 mx-auto h-screen">
+            <div className="flex items-center justify-center pt-4 gap-24">
+                <img className="w-max h-12" src="https://raw.githubusercontent.com/PokeAPI/media/master/logo/pokeapi_256.png" alt="logo" />
+            </div>
+            <div className="flex flex-column justify-center pt-4">
+                {loading ? (
+                    <div className='animate-spin w-16 mt-10'>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M304 48a48 48 0 1 0 -96 0 48 48 0 1 0 96 0zm0 416a48 48 0 1 0 -96 0 48 48 0 1 0 96 0zM48 304a48 48 0 1 0 0-96 48 48 0 1 0 0 96zm464-48a48 48 0 1 0 -96 0 48 48 0 1 0 96 0zM142.9 437A48 48 0 1 0 75 369.1 48 48 0 1 0 142.9 437zm0-294.2A48 48 0 1 0 75 75a48 48 0 1 0 67.9 67.9zM369.1 437A48 48 0 1 0 437 369.1 48 48 0 1 0 369.1 437z" /></svg>
+                    </div>
+                ) : (
+                    !pokemonList ? (
+                        <h1>No pokemon favorited!</h1>
+                    ) : (
+                        pokemonList.map(item => (
+                            <DisplayPokemon pokemon={item} onAddPokemon={handleAddPokemon} />
+                        ))  
+                    )
+                )}
+            </div>
+        </section>
+    )
+};
+
+export default Favorites;

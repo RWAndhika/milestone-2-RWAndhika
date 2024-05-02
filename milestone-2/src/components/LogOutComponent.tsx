@@ -18,7 +18,6 @@ const LogOutComponent = () => {
                         Logout
                     </button>
                 </div>
-
             </div>
         </>
     );
