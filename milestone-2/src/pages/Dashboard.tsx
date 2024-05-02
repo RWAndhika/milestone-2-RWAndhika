@@ -12,25 +12,16 @@ export type Pokemon = {
     attack: number,
     defense: number,
     type: string,
+    favorite: boolean
 }
-
-// export interface Pokemon  {
-//     id: number;
-//     name: string;
-//     species: string;
-//     img: string;
-//     hp: number;
-//     attack: number;
-//     defense: number;
-//     type: string;
-// }
 
 const Dashboard = () => {
 
-    const [loading, setLoading] = useState<Boolean>(false);
+    const [loading, setLoading] = useState<boolean>(false);
     const [pokemonName, setPokemonName] = useState<string>("");
-    const [pokemonChosen, setPokemonChosen] = useState<Boolean>(false);
-    const [favorite, setFavorite] = useState<Pokemon[] | null>(null);
+    const [pokemonChosen, setPokemonChosen] = useState<boolean>(false);
+    const [favorite, setFavorite] = useState<Pokemon[]>([]);
+    const [isFavorited, setIsFavorited] = useState<boolean>(false);
     const [pokemon, setPokemon] = useState<Pokemon>({
         id: 0,
         name: "",
@@ -39,39 +30,63 @@ const Dashboard = () => {
         hp: 0,
         attack: 0,
         defense: 0,
-        type: ""
+        type: "",
+        favorite: false
     });
 
     const navigate = useNavigate();
 
-    const handleAddPokemon = (newPokemon: Pokemon) => {
-        if (favorite) {
-            setFavorite([...favorite, newPokemon]);
+    const handleFavorite = (newPokemon: Pokemon) => {
+        if (localStorage.getItem('favorites')) {
+            setIsFavorited(false);
+            const items = JSON.parse(localStorage.getItem('favorites') || "");
+            for (let i = 0; i < items.length; i++) {
+                if (items[i].id === newPokemon.id) setIsFavorited(true);
+            }
         }
+    }
+
+    useEffect(() => {
+        console.log(isFavorited);
+    },[isFavorited])
+
+    const handleAddPokemon = (newPokemon: Pokemon) => {
+        setFavorite([...favorite, newPokemon]);
+        setPokemonChosen(false);
+    };
+
+    const handleRemovePokemon = (newPokemon: Pokemon) => {
+        if (favorite.length > 0) {
+            setFavorite(
+                favorite.filter(a =>
+                    a.id !== newPokemon.id
+                )
+            )
+            localStorage.favorites = JSON.stringify(favorite);
+        }
+        setPokemonChosen(false);
     };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setPokemonName(e.target.value.toLowerCase());
     }
 
-    // For when we first rendered the screen
     useEffect(() => {
-        if (localStorage.getItem('favorites')) {
-            const items = JSON.parse(localStorage.getItem('favorites') || "")
-            setFavorite(items)
-        } else {
-            localStorage.setItem('favorites', JSON.stringify(favorite));
+        if (localStorage.getItem('favorites') === null) {
+            localStorage.setItem('favorites', "[]");
         }
-        console.log(favorite);
+        const items = JSON.parse(localStorage.getItem('favorites') || "");
+        if (items) {
+            setFavorite(items);
+        }
     }, []);
 
-    // For when a value in favorite updates
     useEffect(() => {
-        if (favorite) {
-            localStorage.favorites = JSON.stringify(favorite);
-        }
-        console.log(favorite);
-    }, [favorite])
+        setTimeout(() => {
+            localStorage.setItem('favorites', JSON.stringify(favorite));
+        }, 1000);
+    }, [favorite]);
+
 
     const loadFavorite = () => {
         localStorage.setItem('favorites', JSON.stringify(favorite));
@@ -87,6 +102,7 @@ const Dashboard = () => {
                 throw new Error("Searching pokemon failed!");
             } else {
                 const data = await response.json();
+                handleFavorite(data);
                 setPokemon({
                     id: data.id,
                     name: pokemonName,
@@ -95,8 +111,10 @@ const Dashboard = () => {
                     hp: data.stats[0].base_stat,
                     attack: data.stats[1].base_stat,
                     defense: data.stats[2].base_stat,
-                    type: data.types[0].type.name
+                    type: data.types[0].type.name,
+                    favorite: isFavorited
                 });
+                console.log(isFavorited);
                 setLoading(false);
                 setPokemonChosen(true);
                 setPokemonName("");
@@ -145,7 +163,7 @@ const Dashboard = () => {
                     !pokemonChosen ? (
                         <h1>Please choose a pokemon</h1>
                     ) : (
-                        <DisplayPokemon pokemon={pokemon} onAddPokemon={handleAddPokemon} />
+                        <DisplayPokemon pokemon={pokemon} onAddPokemon={handleAddPokemon} onRemovePokemon={handleRemovePokemon} isFavorited={isFavorited} />
                     )
                 )}
             </div>

@@ -3,22 +3,74 @@ import { useEffect, useState } from "react";
 import DisplayPokemon from "../components/DisplayPokemon";
 
 const Favorites = () => {
-    
-    const [loading, setLoading] = useState<Boolean>(false);
+
+    const [loading, setLoading] = useState<boolean>(false);
     const [pokemonList, setPokemonList] = useState<Pokemon[]>([]);
 
-    const items = JSON.parse(localStorage.getItem('favorites') || "");
-    
     const handleAddPokemon = (newPokemon: Pokemon) => {
         setPokemonList([...pokemonList, newPokemon]);
     };
-    
+
+    const handleRemovePokemon = (newPokemon: Pokemon) => {
+        if (pokemonList.length > 0) {
+            const array = [...pokemonList];
+            let index = array.indexOf(newPokemon);
+            if (index !== -1) {
+                if (array.length === 1) {
+                    setPokemonList([]);
+                    localStorage.setItem('favorites', "[]");
+                }
+                array.splice(index, 1);
+                setPokemonList(array);
+            }
+        }
+        // if (pokemonList.length > 0) {
+        //     setPokemonList(
+        //         pokemonList.filter(a =>
+        //             a.id !== newPokemon.id
+        //         )
+        //     )
+        //     localStorage.favorites = JSON.stringify(pokemonList);
+        // }
+    };
+
+    // useEffect(() => {
+    //     setLoading(true);
+    //     if (localStorage.getItem('favorites')) {
+    //         const items = JSON.parse(localStorage.getItem('favorites') || "");
+    //         setPokemonList(items);
+    //     } else {
+    //         localStorage.setItem('favorites', JSON.stringify(pokemonList));
+    //     }
+    //     console.log(pokemonList);
+    //     setLoading(false);
+    // }, []);
+
+    // useEffect(() => {
+    //     setLoading(true);
+    //     if (pokemonList.length > 0) {
+    //         localStorage.favorites = JSON.stringify(pokemonList);
+    //     }
+    //     console.log(pokemonList);
+    //     setLoading(false);
+    // }, [pokemonList])
+
+
     useEffect(() => {
-        setLoading(true);
-        setPokemonList(items);
-        setLoading(false);
-        console.log(pokemonList);
+        if (localStorage.getItem('favorites') === null) {
+            localStorage.setItem('favorites', "[]");
+        }
+        const items = JSON.parse(localStorage.getItem('favorites') || "");
+        if (items) {
+            setPokemonList(items);
+        }
     }, []);
+
+    useEffect(() => {
+        setTimeout(() => {
+            localStorage.setItem('favorites', JSON.stringify(pokemonList));
+        }, 1000);
+    }, [pokemonList]);
 
     return (
         <section className="bg-yellow-50 mx-auto h-screen">
@@ -31,12 +83,12 @@ const Favorites = () => {
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M304 48a48 48 0 1 0 -96 0 48 48 0 1 0 96 0zm0 416a48 48 0 1 0 -96 0 48 48 0 1 0 96 0zM48 304a48 48 0 1 0 0-96 48 48 0 1 0 0 96zm464-48a48 48 0 1 0 -96 0 48 48 0 1 0 96 0zM142.9 437A48 48 0 1 0 75 369.1 48 48 0 1 0 142.9 437zm0-294.2A48 48 0 1 0 75 75a48 48 0 1 0 67.9 67.9zM369.1 437A48 48 0 1 0 437 369.1 48 48 0 1 0 369.1 437z" /></svg>
                     </div>
                 ) : (
-                    !pokemonList ? (
+                    pokemonList.length === 0 ? (
                         <h1>No pokemon favorited!</h1>
                     ) : (
                         pokemonList.map(item => (
-                            <DisplayPokemon pokemon={item} onAddPokemon={handleAddPokemon} />
-                        ))  
+                            <DisplayPokemon pokemon={item} onAddPokemon={handleAddPokemon} onRemovePokemon={handleRemovePokemon} isFavorited={true} />
+                        ))
                     )
                 )}
             </div>

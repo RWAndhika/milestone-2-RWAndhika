@@ -4,9 +4,25 @@ import { Pokemon } from "../pages/Dashboard";
 interface DisplayPokemonProps {
     pokemon: Pokemon;
     onAddPokemon: (pokemon: Pokemon) => void;
+    onRemovePokemon: (pokemon: Pokemon) => void;
+    isFavorited?: boolean;
 }
 
-const DisplayPokemon: React.FC<DisplayPokemonProps> = ({pokemon, onAddPokemon}) => {
+const DisplayPokemon: React.FC<DisplayPokemonProps> = ({ pokemon, onAddPokemon, onRemovePokemon, isFavorited }) => {
+
+    // const [isFavorited, setIsFavorited] = useState<boolean>(false);
+
+    // const checkFavorite = () => {
+    //     if (pokemon.favorite) {
+    //         setIsFavorited(true);
+    //     } else {
+    //         setIsFavorited(false);
+    //     }
+    // }
+
+    // useEffect(() => {
+    //     checkFavorite();
+    // }, [])
 
     return (
         <>
@@ -26,10 +42,17 @@ const DisplayPokemon: React.FC<DisplayPokemonProps> = ({pokemon, onAddPokemon}) 
                         </p>
                     </div>
                     <div>
-                        <button onClick={() => pokemon && onAddPokemon(pokemon)}
-                            className="md:min-w-28 sm:min-w-2 text-white bg-blue-700 bg-primary-600 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">
-                            Add
-                        </button>
+                        {!isFavorited ? (
+                            <button onClick={() => pokemon && onAddPokemon(pokemon)}
+                                className="md:min-w-28 sm:min-w-2 text-white bg-blue-700 bg-primary-600 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">
+                                Add
+                            </button>
+                        ) : (
+                            <button onClick={() => pokemon && onRemovePokemon(pokemon)}
+                                className="md:min-w-28 sm:min-w-2 text-white bg-red-700 bg-primary-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">
+                                Remove
+                            </button>
+                        )}
                     </div>
                 </div>
             </div>
