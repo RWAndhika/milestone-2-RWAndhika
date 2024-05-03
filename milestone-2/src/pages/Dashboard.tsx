@@ -143,6 +143,7 @@ const Dashboard = () => {
     }
 
     const searchPokemon = async () => {
+        setSuggestion([]);
         try {
             setLoading(true);
             const response = await fetch(`${URL}${pokemonName}`)
