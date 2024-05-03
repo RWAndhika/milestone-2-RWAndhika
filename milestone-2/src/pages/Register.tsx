@@ -5,12 +5,23 @@ import { useNavigate } from 'react-router-dom';
 
 const Register = () => {
 
+    const [name, setName] = useState<string>("");
+    const [password, setPassword] = useState<string>("");
+
     const initialValues = {
-        name: "",
-        password: ""
+        name: name,
+        password: password
     }
 
     const navigate = useNavigate();
+
+    const onChangeName = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setName(e.target.value);
+    };
+
+    const onChangePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setPassword(e.target.value);
+    };
 
     const registerSchema = Yup.object().shape({
         name: Yup.string().required("Required")
@@ -52,7 +63,7 @@ const Register = () => {
                                         className="block mb-2 text-sm font-medium text-gray-900">
                                             Name:
                                         </label>
-                                    <Field type="text" id="name" name="name" placeholder="Enter your name"
+                                    <Field type="text" id="name" name="name" placeholder="Enter your name" values={onChangeName}
                                         className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" />
                                     <ErrorMessage name="name" component="div" />
                                 </div>
@@ -61,7 +72,7 @@ const Register = () => {
                                         className="block mb-2 text-sm font-medium">
                                             Password:
                                         </label>
-                                    <Field type="password" id="password" name="password" placeholder="••••••••"
+                                    <Field type="password" id="password" name="password" placeholder="••••••••" values={onChangePassword}
                                         className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" />
                                     <ErrorMessage name="password" component="div" />
                                 </div>
