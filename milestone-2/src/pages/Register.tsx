@@ -5,9 +5,6 @@ import { useNavigate } from 'react-router-dom';
 
 const Register = () => {
 
-    const [name, setName] = useState<string>("");
-    const [password, setPassword] = useState<string>("");
-
     const initialValues = {
         name: "",
         password: ""
@@ -16,20 +13,23 @@ const Register = () => {
     const navigate = useNavigate();
 
     const registerSchema = Yup.object().shape({
-        name: Yup.string().required("Required"),
+        name: Yup.string().required("Required")
+            .min(3, 'too short!'),
 
-        password: Yup.string().required("Required"),
+        password: Yup.string().required("Required")
+            .min(5, "must atleast 5 chars!"),
     });
 
     const handleRegister = (name: string, password: string) => {
         localStorage.setItem('name', name);
         localStorage.setItem('password', password);
         alert('Register successful');
+        navigate('/login');
     }
 
     return (
         <section className="bg-yellow-50">
-            <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
+            <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto h-screen lg:py-0">
                 <a onClick={() => {navigate('/')}} className="flex items-center mb-6 text-2xl font-semibold text-gray-900 cursor-pointer">
                     <img className="w-max h-8 mr-2" src="https://raw.githubusercontent.com/PokeAPI/media/master/logo/pokeapi_256.png" alt="logo" />
                     Pokedex

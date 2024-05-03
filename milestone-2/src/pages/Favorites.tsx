@@ -27,37 +27,7 @@ const Favorites = () => {
                 setPokemonList(array);
             }
         }
-        // if (pokemonList.length > 0) {
-        //     setPokemonList(
-        //         pokemonList.filter(a =>
-        //             a.id !== newPokemon.id
-        //         )
-        //     )
-        //     localStorage.favorites = JSON.stringify(pokemonList);
-        // }
     };
-
-    // useEffect(() => {
-    //     setLoading(true);
-    //     if (localStorage.getItem('favorites')) {
-    //         const items = JSON.parse(localStorage.getItem('favorites') || "");
-    //         setPokemonList(items);
-    //     } else {
-    //         localStorage.setItem('favorites', JSON.stringify(pokemonList));
-    //     }
-    //     console.log(pokemonList);
-    //     setLoading(false);
-    // }, []);
-
-    // useEffect(() => {
-    //     setLoading(true);
-    //     if (pokemonList.length > 0) {
-    //         localStorage.favorites = JSON.stringify(pokemonList);
-    //     }
-    //     console.log(pokemonList);
-    //     setLoading(false);
-    // }, [pokemonList])
-
 
     useEffect(() => {
         setLoading(true);
@@ -78,13 +48,13 @@ const Favorites = () => {
     }, [pokemonList]);
 
     return (
-        <section className="bg-yellow-50 mx-auto h-screen">
+        <section className="bg-yellow-50 mx-auto">
             <div className="flex items-center justify-center pt-4 gap-24">
                 <a onClick={() => navigate('/dashboard')} className="cursor-pointer">
                 <img className="w-max h-12" src="https://raw.githubusercontent.com/PokeAPI/media/master/logo/pokeapi_256.png" alt="logo" />
                 </a>
             </div>
-            <div className="flex flex-column justify-center pt-4">
+            <div className="flex flex-row flex-wrap justify-center pt-4 gap-3">
                 {loading ? (
                     <div className='animate-spin w-16 mt-10'>
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M304 48a48 48 0 1 0 -96 0 48 48 0 1 0 96 0zm0 416a48 48 0 1 0 -96 0 48 48 0 1 0 96 0zM48 304a48 48 0 1 0 0-96 48 48 0 1 0 0 96zm464-48a48 48 0 1 0 -96 0 48 48 0 1 0 96 0zM142.9 437A48 48 0 1 0 75 369.1 48 48 0 1 0 142.9 437zm0-294.2A48 48 0 1 0 75 75a48 48 0 1 0 67.9 67.9zM369.1 437A48 48 0 1 0 437 369.1 48 48 0 1 0 369.1 437z" /></svg>

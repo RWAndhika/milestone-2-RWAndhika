@@ -9,21 +9,6 @@ interface DisplayPokemonProps {
 }
 
 const DisplayPokemon: React.FC<DisplayPokemonProps> = ({ pokemon, onAddPokemon, onRemovePokemon, isFavorited }) => {
-
-    // const [isFavorited, setIsFavorited] = useState<boolean>(false);
-
-    // const checkFavorite = () => {
-    //     if (pokemon.favorite) {
-    //         setIsFavorited(true);
-    //     } else {
-    //         setIsFavorited(false);
-    //     }
-    // }
-
-    // useEffect(() => {
-    //     checkFavorite();
-    // }, [])
-
     return (
         <>
             <div className="w-11/12 max-w-sm sm:max-w-2/5 bg-white border border-gray-200 rounded-lg shadow">
