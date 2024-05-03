@@ -1,11 +1,14 @@
 import { Pokemon } from "./Dashboard";
 import { useEffect, useState } from "react";
 import DisplayPokemon from "../components/DisplayPokemon";
+import { useNavigate } from "react-router-dom";
 
 const Favorites = () => {
 
     const [loading, setLoading] = useState<boolean>(false);
     const [pokemonList, setPokemonList] = useState<Pokemon[]>([]);
+
+    const navigate = useNavigate();
 
     const handleAddPokemon = (newPokemon: Pokemon) => {
         setPokemonList([...pokemonList, newPokemon]);
@@ -13,8 +16,8 @@ const Favorites = () => {
 
     const handleRemovePokemon = (newPokemon: Pokemon) => {
         if (pokemonList.length > 0) {
-            const array = [...pokemonList];
-            let index = array.indexOf(newPokemon);
+            const array: Pokemon[] = [...pokemonList];
+            let index: number = array.indexOf(newPokemon);
             if (index !== -1) {
                 if (array.length === 1) {
                     setPokemonList([]);
@@ -57,6 +60,7 @@ const Favorites = () => {
 
 
     useEffect(() => {
+        setLoading(true);
         if (localStorage.getItem('favorites') === null) {
             localStorage.setItem('favorites', "[]");
         }
@@ -64,6 +68,7 @@ const Favorites = () => {
         if (items) {
             setPokemonList(items);
         }
+        setLoading(false);
     }, []);
 
     useEffect(() => {
@@ -75,7 +80,9 @@ const Favorites = () => {
     return (
         <section className="bg-yellow-50 mx-auto h-screen">
             <div className="flex items-center justify-center pt-4 gap-24">
+                <a onClick={() => navigate('/dashboard')} className="cursor-pointer">
                 <img className="w-max h-12" src="https://raw.githubusercontent.com/PokeAPI/media/master/logo/pokeapi_256.png" alt="logo" />
+                </a>
             </div>
             <div className="flex flex-column justify-center pt-4">
                 {loading ? (

@@ -1,7 +1,14 @@
 import { useEffect, useState } from "react";
-import DisplayPokemon from "../components/DisplayPokemon";
 import { useNavigate } from "react-router-dom";
+import DisplayPokemon from "../components/DisplayPokemon";
 import LogOutComponent from "../components/LogOutComponent";
+import SuggestionBarList from "../components/SuggestionBarList";
+
+const URL = 'https://pokeapi.co/api/v2/pokemon/'
+
+const GET_ALL_URL = 'https://pokeapi.co/api/v2/pokemon?limit=100000&offset=0'
+
+const IMG_URL = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/'
 
 export type Pokemon = {
     id: number
@@ -15,6 +22,11 @@ export type Pokemon = {
     favorite: boolean
 }
 
+export type Info = {
+    name: string,
+    url: string
+}
+
 const Dashboard = () => {
 
     const [loading, setLoading] = useState<boolean>(false);
@@ -22,6 +34,8 @@ const Dashboard = () => {
     const [pokemonChosen, setPokemonChosen] = useState<boolean>(false);
     const [favorite, setFavorite] = useState<Pokemon[]>([]);
     const [isFavorited, setIsFavorited] = useState<boolean>(false);
+    const [allPokemonName, setAllPokemonName] = useState<Info[]>([]);
+    const [suggestion, setSuggestion] = useState<Info[]>([]);
     const [pokemon, setPokemon] = useState<Pokemon>({
         id: 0,
         name: "",
@@ -55,6 +69,11 @@ const Dashboard = () => {
         setPokemonChosen(false);
     };
 
+    const handleSuggestionClick = (newPokemonName: string) => {
+        setPokemonName(newPokemonName);
+        setSuggestion([]);
+    };
+
     const handleRemovePokemon = (newPokemon: Pokemon) => {
         if (favorite.length > 0) {
             setFavorite(
@@ -69,9 +88,11 @@ const Dashboard = () => {
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setPokemonName(e.target.value.toLowerCase());
+        handleSuggestion(e.target.value.toLowerCase());
     }
 
     useEffect(() => {
+        getAllPokemon();
         if (localStorage.getItem('favorites') === null) {
             localStorage.setItem('favorites', "[]");
         }
@@ -93,10 +114,38 @@ const Dashboard = () => {
         navigate('/favorites');
     }
 
+    const handleSuggestion = (value: string) => {
+        if (value) {
+            const result = allPokemonName.filter(item =>
+                item.name.includes(value)
+            );
+            setSuggestion(result);
+        } else {
+            setSuggestion([]);
+        }
+    }
+
+    const getAllPokemon = async () => {
+        try {
+            setLoading(true)
+            const response = await fetch(`${GET_ALL_URL}`)
+            const data = await response.json()
+            if (!response.ok) {
+                throw new Error("get pokemon data by name failed!");
+            } else {
+                setAllPokemonName(data.results);
+                setLoading(false)
+            }
+          } catch (error) {
+            alert(error)
+            setLoading(false)
+          }
+    }
+
     const searchPokemon = async () => {
         try {
             setLoading(true);
-            const response = await fetch('https://pokeapi.co/api/v2/pokemon/' + pokemonName)
+            const response = await fetch(`${URL}${pokemonName}`)
             if (!response.ok) {
                 setPokemonChosen(false);
                 throw new Error("Searching pokemon failed!");
@@ -107,14 +156,13 @@ const Dashboard = () => {
                     id: data.id,
                     name: pokemonName,
                     species: data.species.name,
-                    img: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${data.id}.png`,
+                    img: `${IMG_URL}${data.id}.png`,
                     hp: data.stats[0].base_stat,
                     attack: data.stats[1].base_stat,
                     defense: data.stats[2].base_stat,
                     type: data.types[0].type.name,
                     favorite: isFavorited
                 });
-                console.log(isFavorited);
                 setLoading(false);
                 setPokemonChosen(true);
                 setPokemonName("");
@@ -153,6 +201,7 @@ const Dashboard = () => {
                         Search
                     </button>
                 </div>
+                <SuggestionBarList suggestion={suggestion} onClickName={handleSuggestionClick} />
             </div>
             <div className="flex flex-column justify-center pt-4">
                 {loading ? (
