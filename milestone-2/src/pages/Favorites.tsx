@@ -48,13 +48,13 @@ const Favorites = () => {
     }, [pokemonList]);
 
     return (
-        <section className="bg-yellow-50 mx-auto">
+        <section className="bg-yellow-50 mx-auto min-h-screen">
             <div className="flex items-center justify-center pt-4 gap-24">
                 <a onClick={() => navigate('/dashboard')} className="cursor-pointer">
                 <img className="w-max h-12" src="https://raw.githubusercontent.com/PokeAPI/media/master/logo/pokeapi_256.png" alt="logo" />
                 </a>
             </div>
-            <div className="flex flex-row flex-wrap justify-center pt-4 gap-3">
+            <div className="flex flex-row flex-wrap justify-center pt-4 gap-3 pb-4">
                 {loading ? (
                     <div className='animate-spin w-16 mt-10'>
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M304 48a48 48 0 1 0 -96 0 48 48 0 1 0 96 0zm0 416a48 48 0 1 0 -96 0 48 48 0 1 0 96 0zM48 304a48 48 0 1 0 0-96 48 48 0 1 0 0 96zm464-48a48 48 0 1 0 -96 0 48 48 0 1 0 96 0zM142.9 437A48 48 0 1 0 75 369.1 48 48 0 1 0 142.9 437zm0-294.2A48 48 0 1 0 75 75a48 48 0 1 0 67.9 67.9zM369.1 437A48 48 0 1 0 437 369.1 48 48 0 1 0 369.1 437z" /></svg>
